@@ -1,2 +1,0 @@
-set(MITK_PLUGINS
-)
