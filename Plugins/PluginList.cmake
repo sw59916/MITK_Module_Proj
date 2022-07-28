@@ -1,0 +1,2 @@
+set(MITK_PLUGINS
+)

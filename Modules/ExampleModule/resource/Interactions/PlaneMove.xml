@@ -1,0 +1,10 @@
+<statemachine>
+  <state name="start" startstate="true">
+    <transition event_class="MousePressEvent" event_variant="MousePressEvent_Left_Ctrl" target="start">
+      <action name="planeMoveStarted" />
+    </transition>
+    <transition event_class="MouseMoveEvent" event_variant="MouseMoveEvent_Left_Ctrl" target="start">
+      <action name="planeMoved" />
+    </transition>
+  </state>
+</statemachine>
