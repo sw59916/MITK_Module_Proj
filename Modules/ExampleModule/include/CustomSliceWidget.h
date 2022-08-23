@@ -17,7 +17,9 @@ public:
 	virtual ~CustomSliceWidget();
 
 public:
-	void initializeWidget(mitk::StandaloneDataStorage::Pointer dataStorage, mitk::DataNode::Pointer imageNode, mitk::SliceNavigationController::ViewDirection viewDir);
+	void initializeWidget(mitk::StandaloneDataStorage::Pointer dataStorage, mitk::SliceNavigationController::ViewDirection viewDir);
+
+	void setImage(mitk::DataNode::Pointer imageNode);
 
 	mitk::DataNode* getPlaneNode() { return m_planeNode; }
 
@@ -31,6 +33,7 @@ private slots:
 private:
 	mitk::StandaloneDataStorage* m_dataStorage;
 	mitk::DataNode* m_planeNode;
+	mitk::SliceNavigationController::ViewDirection m_viewDir;
 
 	QmitkSliceWidget* m_sliceWidget;
 	QComboBox* m_comboBoxResliceMethod;

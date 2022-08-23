@@ -12,15 +12,6 @@ MainViewer::~MainViewer()
 
 void MainViewer::initialize()
 {
-	try
-	{
-		loadData();
-	}
-	catch (mitk::Exception& e)
-	{
-		e.Print(cout);
-	}
-
 	setupWidget();
 
 	initializeMouseInteraction();
@@ -28,35 +19,30 @@ void MainViewer::initialize()
 	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
-void MainViewer::loadData()
+void MainViewer::setImage(mitk::Image::Pointer image)
 {
-	// load image
-	//mitk::IOUtil::Load("D:\\dcmTest\\DCM\\Slice0000.dcm", *ds);
-	mitk::IOUtil::Load("D:\\dcmTest\\slice_512x512x512" , *ds); // \\slice0000.dcm", *ds);
-
+	mitk::DataNode::Pointer imageNode = mitk::DataNode::New();
+	imageNode->SetData(image->Clone());
+	ds->Add(imageNode);
 
 	// image setting
-	mitk::StandaloneDataStorage::SetOfObjects::ConstPointer dataNodes = ds->GetAll();
-	mitk::DataNode::Pointer imageNode = dataNodes->at(0);
-	mitk::Image::Pointer image = dynamic_cast<mitk::Image*>(imageNode->GetData());
-
 	if (image.IsNotNull())
 	{
-		/*
-		imageNode->SetProperty("volumerendering", mitk::BoolProperty::New(false));
-		std::vector<std::string> keys = imageNode->GetPropertyKeys();
+		// Set Volume Render Option
+		/*imageNode->SetProperty("volumerendering", mitk::BoolProperty::New(true));
 
-		mitk::TransferFunction::Pointer tf = mitk::TransferFunction::New();
-		tf->InitializeByMitkImage(image);
+		/*mitk::TransferFunction::Pointer tf = mitk::TransferFunction::New();
+		tf->InitializeByMitkImage(image);*/
 
+		// Add Color
 		//tf->GetColorTransferFunction()->AddRGBPoint(5000, 0.0, 0.0, 0.0);
 		//tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[1], 0.0, 0.0, 1.0);
 
-		tf->GetScalarOpacityFunction()->AddPoint(5000, 0);
+		// Add Opacity
+		/*tf->GetScalarOpacityFunction()->AddPoint(7000, 0);
 		tf->GetScalarOpacityFunction()->AddPoint(tf->GetColorTransferFunction()->GetRange()[1], 1);
 
-		imageNode->SetProperty("TransferFunction", mitk::TransferFunctionProperty::New(tf.GetPointer()));
-		*/
+		imageNode->SetProperty("TransferFunction", mitk::TransferFunctionProperty::New(tf.GetPointer()));*/
 	}
 
 	// Create Surface by InputImage
@@ -76,6 +62,13 @@ void MainViewer::loadData()
 
 	//	ds->Add(surfaceNode);
 	//}
+
+	auto geo = ds->ComputeBoundingGeometry3D(ds->GetAll());
+	mitk::RenderingManager::GetInstance()->InitializeViews(geo);
+
+	axialView->setImage(imageNode);
+	sagittalView->setImage(imageNode);
+	frontalView->setImage(imageNode);
 }
 
 void MainViewer::setupWidget()
@@ -105,24 +98,19 @@ void MainViewer::setupWidget()
 	renderWindow->GetRenderer()->SetDataStorage(ds);
 	renderWindow->GetRenderer()->SetMapperID(mitk::BaseRenderer::Standard3D);
 
-	auto geo = ds->ComputeBoundingGeometry3D(ds->GetAll());
-	mitk::RenderingManager::GetInstance()->InitializeViews(geo);
 
-
-	mitk::StandaloneDataStorage::SetOfObjects::ConstPointer dataNode = ds->GetAll();
-	mitk::DataNode::Pointer imageNode = dataNode->at(0);
 
 	axialView = new CustomSliceWidget(topWidget);
 	topLayout->addWidget(axialView);
-	axialView->initializeWidget(ds, imageNode, mitk::SliceNavigationController::Axial);
+	axialView->initializeWidget(ds, mitk::SliceNavigationController::Axial);
 
 	sagittalView = new CustomSliceWidget(topWidget);
 	topLayout->addWidget(sagittalView);
-	sagittalView->initializeWidget(ds, imageNode, mitk::SliceNavigationController::Sagittal);
+	sagittalView->initializeWidget(ds, mitk::SliceNavigationController::Sagittal);
 
 	frontalView = new CustomSliceWidget(bottomWidget);
 	bottomLayout->addWidget(frontalView);
-	frontalView->initializeWidget(ds, imageNode, mitk::SliceNavigationController::Frontal);
+	frontalView->initializeWidget(ds, mitk::SliceNavigationController::Coronal);
 
 	bottomLayout->addWidget(renderWindow);
 

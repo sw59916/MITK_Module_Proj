@@ -33,9 +33,9 @@ public:
 
 public:
 	virtual void initialize();
+	virtual void setImage(mitk::Image::Pointer image);
 	
 protected:
-	virtual void loadData();
 	virtual void setupWidget();
 	virtual void initializeMouseInteraction();
 

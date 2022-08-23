@@ -11,9 +11,10 @@ CustomSliceWidget::~CustomSliceWidget()
 
 }
 
-void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer dataStorage, mitk::DataNode::Pointer imageNode, mitk::SliceNavigationController::ViewDirection viewDir)
+void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer dataStorage, mitk::SliceNavigationController::ViewDirection viewDir)
 {
 	m_dataStorage = dataStorage;
+	m_viewDir = viewDir;
 
 	QVBoxLayout* parentLayout = new QVBoxLayout(this);
 	
@@ -27,10 +28,20 @@ void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer da
 	m_sliceWidget->SetDataStorage(dataStorage);
 	m_sliceWidget->GetRenderWindow()->ActivateMenuWidget(true);
 
+	m_planeNode = m_sliceWidget->GetRenderer()->GetCurrentWorldPlaneGeometryNode();
+	m_planeNode->SetProperty("reslice.thickslices.showarea", mitk::BoolProperty::New(true));
+	m_dataStorage->Add(m_planeNode);
+
+	// Initialize BottomWidget
+	initializeBottomWidget(bottomWidget);
+}
+
+void CustomSliceWidget::setImage(mitk::DataNode::Pointer imageNode)
+{
 	mitk::Image::Pointer image = dynamic_cast<mitk::Image*>(imageNode->GetData());
 	if (image.IsNotNull())
 	{
-		m_sliceWidget->SetData(imageNode, viewDir);
+		m_sliceWidget->SetData(imageNode, m_viewDir);
 
 		unsigned int steps = 0;
 		unsigned int halfPos = 0;
@@ -39,14 +50,6 @@ void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer da
 		halfPos = steps / 2;
 		m_sliceWidget->GetSliceNavigationController()->GetSlice()->SetPos(halfPos);
 	}
-
-	m_planeNode = m_sliceWidget->GetRenderer()->GetCurrentWorldPlaneGeometryNode();
-	m_planeNode->SetProperty("reslice.thickslices.showarea", mitk::BoolProperty::New(true));
-	m_dataStorage->Add(m_planeNode);
-
-
-	// Initialize BottomWidget
-	initializeBottomWidget(bottomWidget);
 }
 
 void CustomSliceWidget::initializeBottomWidget(QWidget* baseWidget)
