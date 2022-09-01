@@ -26,7 +26,7 @@ void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer da
 
 	// Initialize SliceWidget
 	m_sliceWidget->SetDataStorage(dataStorage);
-	m_sliceWidget->GetRenderWindow()->ActivateMenuWidget(true);
+	/*m_sliceWidget->GetRenderWindow()->ActivateMenuWidget(true);*/
 
 	m_planeNode = m_sliceWidget->GetRenderer()->GetCurrentWorldPlaneGeometryNode();
 	m_planeNode->SetProperty("reslice.thickslices.showarea", mitk::BoolProperty::New(true));
@@ -36,12 +36,22 @@ void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer da
 	initializeBottomWidget(bottomWidget);
 }
 
-void CustomSliceWidget::setImage(mitk::DataNode::Pointer imageNode)
+void CustomSliceWidget::setColor(mitk::Color color)
 {
-	mitk::Image::Pointer image = dynamic_cast<mitk::Image*>(imageNode->GetData());
+	m_planeNode->SetColor(color);
+}
+
+void CustomSliceWidget::setImageNode(mitk::DataNode::Pointer imageNode)
+{
+	m_imageNode = imageNode;
+}
+
+void CustomSliceWidget::initializeImage()
+{
+	mitk::Image::Pointer image = dynamic_cast<mitk::Image*>(m_imageNode->GetData());
 	if (image.IsNotNull())
 	{
-		m_sliceWidget->SetData(imageNode, m_viewDir);
+		m_sliceWidget->SetData(m_imageNode, m_viewDir);
 
 		unsigned int steps = 0;
 		unsigned int halfPos = 0;

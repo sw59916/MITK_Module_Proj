@@ -1,9 +1,12 @@
 #include "MainViewer.h"
-#include "PlaneInteractor.h"
 
 MainViewer::MainViewer(QWidget* parent) : QWidget(parent)
 {
 	ds = mitk::StandaloneDataStorage::New();
+	m_imageNode = mitk::DataNode::New();
+	ds->Add(m_imageNode);
+
+	m_volumeRendering = false;
 }
 
 MainViewer::~MainViewer()
@@ -16,34 +19,65 @@ void MainViewer::initialize()
 
 	initializeMouseInteraction();
 
+	axialView->setImageNode(m_imageNode);
+	sagittalView->setImageNode(m_imageNode);
+	frontalView->setImageNode(m_imageNode);
+
 	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
 void MainViewer::setImage(mitk::Image::Pointer image)
 {
-	mitk::DataNode::Pointer imageNode = mitk::DataNode::New();
-	imageNode->SetData(image->Clone());
-	ds->Add(imageNode);
+	m_imageNode->SetData(image->Clone());
 
-	// image setting
-	if (image.IsNotNull())
-	{
-		// Set Volume Render Option
-		/*imageNode->SetProperty("volumerendering", mitk::BoolProperty::New(true));
+	mitk::Mapper* mapper = m_imageNode->GetMapper(mitk::BaseRenderer::Standard3D);
+	cout << mapper->GetNameOfClass() << endl;
 
-		/*mitk::TransferFunction::Pointer tf = mitk::TransferFunction::New();
-		tf->InitializeByMitkImage(image);*/
 
-		// Add Color
-		//tf->GetColorTransferFunction()->AddRGBPoint(5000, 0.0, 0.0, 0.0);
-		//tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[1], 0.0, 0.0, 1.0);
+	auto geo = ds->ComputeBoundingGeometry3D(ds->GetAll());
+	mitk::RenderingManager::GetInstance()->InitializeViews(geo);
 
-		// Add Opacity
-		/*tf->GetScalarOpacityFunction()->AddPoint(7000, 0);
-		tf->GetScalarOpacityFunction()->AddPoint(tf->GetColorTransferFunction()->GetRange()[1], 1);
+	setupImage();
+}
 
-		imageNode->SetProperty("TransferFunction", mitk::TransferFunctionProperty::New(tf.GetPointer()));*/
-	}
+void MainViewer::setVolumeRendering(bool volumeRender)
+{
+	m_volumeRendering = volumeRender;
+
+	setupImage();
+}
+
+void MainViewer::setupImage()
+{
+	mitk::Image::Pointer image = dynamic_cast<mitk::Image*>(m_imageNode->GetData());
+
+	if (image.IsNull())
+		return;
+
+	// Initialize Slice Viewer
+	axialView->initializeImage();
+	sagittalView->initializeImage();
+	frontalView->initializeImage();
+	//
+
+	// Set Volume Render Option
+	m_imageNode->SetProperty("volumerendering", mitk::BoolProperty::New(m_volumeRendering));
+
+	mitk::TransferFunction::Pointer tf = mitk::TransferFunction::New();
+	tf->InitializeByMitkImage(image);
+
+	// Add Color
+	tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[0], 1.0, 1.0, 1.0);
+	tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[1], 1.0, 1.0, 1.0);
+
+	// Add Opacity
+	tf->GetScalarOpacityFunction()->AddPoint(5500, 0);
+	tf->GetScalarOpacityFunction()->AddPoint(7000, 1);
+
+	/*tf->GetScalarOpacityFunction()->AddPoint(7000, 0);
+	tf->GetScalarOpacityFunction()->AddPoint(10000, 1);*/
+
+	m_imageNode->SetProperty("TransferFunction", mitk::TransferFunctionProperty::New(tf.GetPointer()));
 
 	// Create Surface by InputImage
 	//if (image.IsNotNull())
@@ -62,13 +96,6 @@ void MainViewer::setImage(mitk::Image::Pointer image)
 
 	//	ds->Add(surfaceNode);
 	//}
-
-	auto geo = ds->ComputeBoundingGeometry3D(ds->GetAll());
-	mitk::RenderingManager::GetInstance()->InitializeViews(geo);
-
-	axialView->setImage(imageNode);
-	sagittalView->setImage(imageNode);
-	frontalView->setImage(imageNode);
 }
 
 void MainViewer::setupWidget()
@@ -114,21 +141,35 @@ void MainViewer::setupWidget()
 
 	bottomLayout->addWidget(renderWindow);
 
+	mitk::Color color;
+	color[0] = 0.753f;
+	color[1] = 0.f;
+	color[2] = 0.f;
+	axialView->setColor(color);
+
+	color[0] = 0.f;
+	color[1] = 0.69f;
+	color[2] = 0.f;
+	sagittalView->setColor(color);
+
+	color[0] = 0.f;
+	color[1] = 0.502f;
+	color[2] = 1.f;
+	frontalView->setColor(color);
+
+
 	//
 }
 
 void MainViewer::initializeMouseInteraction()
 {
-	mitk::StandaloneDataStorage::SetOfObjects::ConstPointer dataNode = ds->GetAll();
-	mitk::DataNode::Pointer imageNode = dataNode->at(0);
-
 	auto exampleModule = us::ModuleRegistry::GetModule("MitkExampleModule");
 
 	if (exampleModule == nullptr)
 		return;
 
-	auto interactor = PlaneInteractor::New();
-	interactor->LoadStateMachine("PlaneMove.xml", exampleModule);
-	interactor->SetEventConfig("PlaneMoveConfig.xml", exampleModule);
-	interactor->SetDataNode(imageNode);
+	m_interactor = PlaneInteractor::New();
+	m_interactor->LoadStateMachine("PlaneMove.xml", exampleModule);
+	m_interactor->SetEventConfig("PlaneMoveConfig.xml", exampleModule);
+	m_interactor->SetDataNode(m_imageNode);
 }

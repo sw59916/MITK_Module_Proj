@@ -19,7 +19,11 @@ public:
 public:
 	void initializeWidget(mitk::StandaloneDataStorage::Pointer dataStorage, mitk::SliceNavigationController::ViewDirection viewDir);
 
-	void setImage(mitk::DataNode::Pointer imageNode);
+	void setColor(mitk::Color color);
+
+	void setImageNode(mitk::DataNode::Pointer imageNode);
+	void initializeImage();
+
 
 	mitk::DataNode* getPlaneNode() { return m_planeNode; }
 
@@ -32,6 +36,7 @@ private slots:
 
 private:
 	mitk::StandaloneDataStorage* m_dataStorage;
+	mitk::DataNode::Pointer m_imageNode;
 	mitk::DataNode* m_planeNode;
 	mitk::SliceNavigationController::ViewDirection m_viewDir;
 

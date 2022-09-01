@@ -1,22 +1,23 @@
 set(CPP_FILES
-  ExampleModule.cpp
-  MainViewer.cpp
-  CustomSliceWidget.cpp
-  PlaneInteractor.cpp
-)
-
-set(HEADER_FILES
-  ExampleModule.h
-  MainViewer.h
-  CustomSliceWidget.h
-  PlaneInteractor.h
+  Viewer/MainViewer.cpp
+  Viewer/CustomSliceWidget.cpp
+  Viewer/PlaneInteractor.cpp
+  Viewer/ImageProcessingWidget.cpp
+  Viewer/ImageProcessingParamWidget.cpp
+  ImageProcessing/ImageProcessing.cpp
+  ImageProcessing/ImageProcessingImpl.cpp
+  ImageProcessing/ImageProcessingKernel.cpp
+  Utility/UtilImage.cpp
+  Utility/UtilStopwatch.cpp
 )
 
 set(UI_FILES
 )
 
 set(MOC_H_FILES
-  include/CustomSliceWidget.h
+  Viewer/CustomSliceWidget.h
+  Viewer/ImageProcessingWidget.h
+  Viewer/ImageProcessingParamWidget.h
 )
 
 set(RESOURCE_FILES

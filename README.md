@@ -1,3 +1,62 @@
+구현된 클래스들
+
+1. Viewer
+
+  1) Main Viewer 
+    - MPR View
+
+  2) CustomSliceWidget 
+    - MPR View에 포함된 2D SliceViewer
+    - QmitkSliceWidget 하단에 Reslice 옵션 기능 추가됨.
+
+  3) PlaneInteractor
+    - 2D & 3D Viewer에서 Plane 이동 시킬 수 있는 Interactor
+    - Ctrl + MouseLButton + move
+
+  4) ImageProcessingWidget
+    - Brightness, Contrast, LevelWindow, ImageFilter 옵션 UI
+
+  5) ImageProcessingParamWidget
+    - ImageProcessingWidget의 ImageFilter Parameter값 조절 가능한 UI
+
+
+2. ImageProcessing (구현된 Filter : SharpenFilter, MedianBlur, GaussianBlur, BilateralFilter)
+
+  1) ImageProcessing
+    - ImageFilter 실행을 위한 클래스
+
+  2) ImageProcessingPiplineObject
+    - mitk Filter구조를 가진 클래스
+    - 내부에서 ImageProcessing->runFilter 호출함.
+
+  3) CustomImageMapper2D
+    - 2D Viewer에 Filter적용을 위한 Mapper 클래스
+    - 이 클래스를 생성하여 2D Mapper에 넣어주면, Filter가 동작함.
+   
+  4) ImageProcessingImpl
+    - ImageFilter의 내부 로직 구현을 위한 클래스 모음
+    - IMPL_PROCESSING_RUN_MACRO 매크로를 사용해 PixelType별로 Template변경하여 run함수 호출시킴.
+
+  5) ImageProcessingKernel
+    - Processing시 필요한 Kernel 클래스
+
+
+3. Utility
+
+  1) Util::Image
+    - Image Load, Save 함수 구현됨.
+    - 좌표변환에 도움되는 함수 구현됨.
+
+  2)  Util::Stopwatch
+    - 시간측정시 도움되는 클래스
+
+
+
+
+
+
+
+=========================
 The MITK Project Template
 =========================
 

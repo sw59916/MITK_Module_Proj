@@ -24,6 +24,8 @@
 #include "MitkExampleModuleExports.h"
 
 #include "CustomSliceWidget.h"
+#include "PlaneInteractor.h"
+
 
 class MITKEXAMPLEMODULE_EXPORT MainViewer : public QWidget
 {
@@ -34,14 +36,21 @@ public:
 public:
 	virtual void initialize();
 	virtual void setImage(mitk::Image::Pointer image);
+
+public:
+	void setVolumeRendering(bool volumRender);
+
+	mitk::DataNode::Pointer getImageNode() { return m_imageNode; }
 	
 protected:
+	virtual void setupImage();
 	virtual void setupWidget();
 	virtual void initializeMouseInteraction();
 
 
 private:
 	mitk::StandaloneDataStorage::Pointer ds;
+	mitk::DataNode::Pointer m_imageNode;
 
 	mitk::DataNode* m_axialPlaneNode;
 	mitk::DataNode* m_sagittalPlaneNode;
@@ -51,5 +60,9 @@ private:
 	CustomSliceWidget* axialView;
 	CustomSliceWidget* sagittalView;
 	CustomSliceWidget* frontalView;
+
+	PlaneInteractor::Pointer m_interactor;
+
+	bool m_volumeRendering;
 };
 

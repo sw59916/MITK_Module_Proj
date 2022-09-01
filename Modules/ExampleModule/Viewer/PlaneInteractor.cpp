@@ -33,7 +33,6 @@ void PlaneInteractor::DataNodeChanged()
 void PlaneInteractor::moveStarted(mitk::StateMachineAction*, mitk::InteractionEvent* event)
 {
 	mitk::BaseRenderer* renderer = event->GetSender();
-
 	mitk::InteractionPositionEvent* positionEvent = static_cast<mitk::InteractionPositionEvent*>(event);
 
 	if (renderer->GetMapperID() == mitk::BaseRenderer::Standard2D)
@@ -49,7 +48,6 @@ void PlaneInteractor::moveStarted(mitk::StateMachineAction*, mitk::InteractionEv
 void PlaneInteractor::moving(mitk::StateMachineAction*, mitk::InteractionEvent* event)
 {
 	mitk::BaseRenderer* renderer = event->GetSender();
-
 	mitk::InteractionPositionEvent* positionEvent = static_cast<mitk::InteractionPositionEvent*>(event);
 
 	if (renderer->GetMapperID() == mitk::BaseRenderer::Standard2D)
@@ -106,8 +104,8 @@ void PlaneInteractor::moveStart3D(mitk::BaseRenderer* sender, mitk::InteractionP
 				m_LastPlanePos = planeRenderer->GetSliceNavigationController()->GetSlice()->GetPos();
 			}
 		}
-		// ¾µµ¥¾ø´Â ÄÚµå........
-		// PlaneGeometryData¶û ¿¬°áµÈ Surface¹Þ¾Æ¿À·Á´Â ÄÚµå
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½........
+		// PlaneGeometryDataï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Surfaceï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½
 		/*mitk::Mapper* mapper = planeNode->GetMapper(renderer->GetMapperID());
 
 		mitk::SmartPointerProperty::Pointer surfacecreatorprop;
@@ -166,8 +164,8 @@ void PlaneInteractor::move3D(mitk::BaseRenderer* sender, mitk::InteractionPositi
 	moveVector *= sender->GetScaleFactorMMPerDisplayUnit();
 
 	// Calculate 
-	// PlaneObject¸¦ Z¹æÇâÀ¸·Î 1Pixel ¿òÁ÷¿´À» ¶§ World ÁÂÇ¥¸¦, Display ÁÂÇ¥·Î º¯È¯.
-	// PlaneObject°¡ Z¹æÇâÀ¸·Î 1Pixel ¿òÁ÷ÀÏ ¶§, Display ÁÂÇ¥°è¿¡¼­ÀÇ º¯È­·®À» ¾ò±â À§ÇÔ.
+	// PlaneObjectï¿½ï¿½ Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1Pixel ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ World ï¿½ï¿½Ç¥ï¿½ï¿½, Display ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½È¯.
+	// PlaneObjectï¿½ï¿½ Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1Pixel ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, Display ï¿½ï¿½Ç¥ï¿½è¿¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	mitk::Vector2D zDirVector2D;
 	{
 		itk::Index<3> orgIdx;
@@ -195,8 +193,8 @@ void PlaneInteractor::move3D(mitk::BaseRenderer* sender, mitk::InteractionPositi
 	}
 	
 
-	// Mouse ÀÌµ¿·®¿¡¼­, À§¿¡¼­ ¾ò¾î¿Â ¹æÇâvectorÀÇ 0µµ ±âÁØÀ¸·Î X º¯È­·®¸¸ °¡Á®¿È.
-	// X, Y·Î ¿òÁ÷ÀÌ·Á ÇÒ ¶§, ¸ø¿òÁ÷ÀÌ°Ô ÇÏ±âÀ§ÇÔ.
+	// Mouse ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½vectorï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X ï¿½ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+	// X, Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì·ï¿½ ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½.
 	double mouseMovingDistance = 0;
 	{
 		double planeZAxisAngle = atan2l(zDirVector2D[1], zDirVector2D[0]);
@@ -208,10 +206,10 @@ void PlaneInteractor::move3D(mitk::BaseRenderer* sender, mitk::InteractionPositi
 		mouseMovingDistance = rotateMousePos[0];
 	}
 
-	// ZÃà 1Pixel ¿òÁ÷ÀÏ ¶§, ÀÌµ¿·® °è»ê.
+	// Zï¿½ï¿½ 1Pixel ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
 	double zAxisDistance = sqrtl((zDirVector2D[0] * zDirVector2D[0]) + (zDirVector2D[1] * zDirVector2D[1]));
 
-	// PlaneObject ÃÖÁ¾ ÀÌµ¿·® °è»ê.
+	// PlaneObject ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
 	double targetDistance = mouseMovingDistance / zAxisDistance;
 	int targetPos = m_LastPlanePos + (int)targetDistance;
 	targetPos = std::max(0, std::min(targetPos, (int)planeRenderer->GetSliceNavigationController()->GetSlice()->GetSteps() - 1));
