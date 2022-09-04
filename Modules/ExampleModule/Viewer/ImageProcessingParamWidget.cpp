@@ -75,7 +75,7 @@ void GaussianBlurParamWidget::initialize()
 
 	QLineEdit* editSigma = new QLineEdit(this);
 	QDoubleValidator* doubleValidator = new QDoubleValidator;
-	doubleValidator->setRange(0.1, 50.f);
+	doubleValidator->setRange(0.1, 50.f, 2);
 	editSigma->setValidator(doubleValidator);
 	editSigma->setText(QString::number(m_param.m_sigma));
 
@@ -135,7 +135,7 @@ void BilateralFilterParamWidget::initialize()
 
 	QLineEdit* editSigmaSpace = new QLineEdit(this);
 	QDoubleValidator* doubleValidator = new QDoubleValidator;
-	doubleValidator->setRange(0.1, 50.f);
+	doubleValidator->setRange(0.1, 50.f, 2);
 	editSigmaSpace->setValidator(doubleValidator);
 	editSigmaSpace->setText(QString::number(m_param.m_sigmaSpace));
 
@@ -145,7 +145,7 @@ void BilateralFilterParamWidget::initialize()
 
 	QLineEdit* editSigmaColor = new QLineEdit(this);
 	doubleValidator = new QDoubleValidator;
-	doubleValidator->setRange(0.1, 50.f);
+	doubleValidator->setRange(0.1, 50.f, 2);
 	editSigmaColor->setValidator(doubleValidator);
 	editSigmaColor->setText(QString::number(m_param.m_sigmaColor));
 

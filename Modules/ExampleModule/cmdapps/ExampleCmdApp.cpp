@@ -90,20 +90,16 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		mitk::Image::Pointer image = Util::Image::Load("D:\\dcmTest\\sliceDcm");
-
-
+		//mitk::Image::Pointer image = Util::Image::Load("D:\\dcmTest\\slice_512x512x512");
+		mitk::Image::Pointer image = Util::Image::Load("D:\\dcmTest\\SliceDcm");
 
 		mainViewer->initialize();
 		mainViewer->setVolumeRendering(true);
 		processingWidget->initialize(mainViewer->getImageNode());
 
-		
-
-
 		mainWidget.show();
-		mainWidget.move(700, 100);
-		mainWidget.resize(1600, 1000);
+		mainWidget.move(700, 60);
+		mainWidget.resize(1600, 1200);
 
 		secondWidget.show();
 		secondWidget.move(300, 300);
@@ -116,6 +112,10 @@ int main(int argc, char* argv[])
 			processingWidget->updateParamByImage();
 		}
 	}
+	catch (itk::ExceptionObject* e)
+	{
+		e->Print(cout);
+	}
 	catch (itk::ExceptionObject& e)
 	{
 		e.Print(cout);
@@ -123,6 +123,10 @@ int main(int argc, char* argv[])
 	catch (std::exception& e)
 	{
 		cout << e.what();
+	}
+	catch (std::exception* e)
+	{
+		cout << e->what();
 	}
 
 

@@ -274,6 +274,7 @@ void BilateralFilterImpl::run(mitk::Image::Pointer inputImage, mitk::Image::Poin
 	if (m_kernelSize == 0)
 		m_kernelSize = m_sigmaSpace * 6 + 1;
 	//
+
 	// change size to odd
 	if (m_kernelSize % 2 == 0)
 		m_kernelSize++;
@@ -295,60 +296,9 @@ void BilateralFilterImpl::run(mitk::Image::Pointer inputImage, mitk::Image::Poin
 				ProcessingKernel::kernelProcessing<TPixelType, 2>(inputImage, outputImage, inputBuffer, outputBuffer, bilateralKernel.get(), targetIdx);
 			}
 		}
-
-		// kernel value test
-		/*{
-			cout << std::fixed;
-			cout.precision(6);
-
-
-			targetIdx[0] = 662;
-			targetIdx[1] = 560;
-			ProcessingKernel::Pointer bilateralKernel = ProcessingKernel::createBilatralKernel2D<TPixelType>(inputImage, targetIdx, m_sigmaSpace, m_sigmaColor, m_kernelSize);
-			
-			for (int y = 0; y < bilateralKernel->getKernelSize()[1]; y++)
-			{
-				for (int x = 0; x < bilateralKernel->getKernelSize()[0]; x++)
-				{
-					cout << bilateralKernel->getElement(x, y, 0) << " ";
-				}
-				cout << endl;
-			}
-			cout << endl;
-
-			targetIdx[0] = 662;
-			targetIdx[1] = 555;
-			bilateralKernel = ProcessingKernel::createBilatralKernel2D<TPixelType>(inputImage, targetIdx, m_sigmaSpace, m_sigmaColor, m_kernelSize);
-
-			for (int y = 0; y < bilateralKernel->getKernelSize()[1]; y++)
-			{
-				for (int x = 0; x < bilateralKernel->getKernelSize()[0]; x++)
-				{
-					cout << bilateralKernel->getElement(x, y, 0) << " ";
-				}
-				cout << endl;
-			}
-			cout << endl;
-
-			targetIdx[0] = 679;
-			targetIdx[1] = 559;
-			bilateralKernel = ProcessingKernel::createBilatralKernel2D<TPixelType>(inputImage, targetIdx, m_sigmaSpace, m_sigmaColor, m_kernelSize);
-
-			for (int y = 0; y < bilateralKernel->getKernelSize()[1]; y++)
-			{
-				for (int x = 0; x < bilateralKernel->getKernelSize()[0]; x++)
-				{
-					cout << bilateralKernel->getElement(x, y, 0) << " ";
-				}
-				cout << endl;
-			}
-			cout << endl;
-
-			return;
-		}*/
-		//
 	}
 	else if (inputImage->GetDimension() == 3)
 	{
+		outputImage->SetVolume(inputBuffer);
 	}
 }

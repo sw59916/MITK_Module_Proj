@@ -26,6 +26,7 @@ void CustomSliceWidget::initializeWidget(mitk::StandaloneDataStorage::Pointer da
 
 	// Initialize SliceWidget
 	m_sliceWidget->SetDataStorage(dataStorage);
+	m_sliceWidget->SetLevelWindowEnabled(false);
 	/*m_sliceWidget->GetRenderWindow()->ActivateMenuWidget(true);*/
 
 	m_planeNode = m_sliceWidget->GetRenderer()->GetCurrentWorldPlaneGeometryNode();

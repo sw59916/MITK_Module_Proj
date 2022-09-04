@@ -16,6 +16,7 @@
 #include <mitkResliceMethodProperty.h>
 #include <mitkInteractionEvent.h>
 #include <mitkInteractionKeyEvent.h>
+#include <mitkVolumeMapperVtkSmart3D.h>
 
 
 #include <mitkPlaneGeometryDataMapper2D.h>
@@ -26,6 +27,28 @@
 #include "CustomSliceWidget.h"
 #include "PlaneInteractor.h"
 
+
+class MITKEXAMPLEMODULE_EXPORT CustomVolumeMapper : public mitk::VolumeMapperVtkSmart3D
+{
+public:
+	mitkClassMacro(CustomVolumeMapper, VolumeMapperVtkSmart3D);
+
+	itkFactorylessNewMacro(Self);
+
+	itkCloneMacro(Self);
+
+	double getRequiredFPS();
+	void setRequiredFPS(double fps);
+
+protected:
+	CustomVolumeMapper();
+	~CustomVolumeMapper() override;
+
+	void GenerateDataForRenderer(mitk::BaseRenderer* renderer) override;
+
+private:
+	double m_requiredFPS;
+};
 
 class MITKEXAMPLEMODULE_EXPORT MainViewer : public QWidget
 {
@@ -52,9 +75,7 @@ private:
 	mitk::StandaloneDataStorage::Pointer ds;
 	mitk::DataNode::Pointer m_imageNode;
 
-	mitk::DataNode* m_axialPlaneNode;
-	mitk::DataNode* m_sagittalPlaneNode;
-	mitk::DataNode* m_frontalPlaneNode;
+	CustomVolumeMapper::Pointer m_volumeMapper;
 
 	QmitkRenderWindow* renderWindow;
 	CustomSliceWidget* axialView;

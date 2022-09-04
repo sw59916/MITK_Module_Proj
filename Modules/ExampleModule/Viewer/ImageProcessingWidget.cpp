@@ -168,7 +168,7 @@ QWidget* ImageProcessingWidget::createLevelWindowWidget(QWidget* parent)
 	layout->setHorizontalSpacing(2);
 	layout->setMargin(0);
 
-	QDoubleValidator* aIntValidator = new QDoubleValidator;
+	QIntValidator* aIntValidator = new QIntValidator;
 	aIntValidator->setRange(0, 100000000);
 
 	m_editLevelMin = new QLineEdit(widget);
@@ -263,10 +263,25 @@ void ImageProcessingWidget::updateUI()
 	if (levelWindowProp.IsNotNull())
 	{
 		levelWindowProp->SetLevelWindow(m_levelWindow);
-		mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+		
+		updateImage();
 	}
 
 	m_uiUpdating = false;
+}
+
+void ImageProcessingWidget::updateImage()
+{
+	mitk::RenderingManager::RenderWindowVector windows = mitk::RenderingManager::GetInstance()->GetAllRegisteredRenderWindows();
+	for (auto& window : windows)
+	{
+		if (mitk::BaseRenderer::GetInstance(window)->GetMapperID() == mitk::BaseRenderer::Standard3D)
+			continue;
+
+		mitk::BaseRenderer::GetInstance(window)->SendUpdateSlice();
+	}
+
+	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
 
@@ -314,9 +329,7 @@ void ImageProcessingWidget::OnCheckSharpenFilter(int state)
 	else
 		m_mapper->getProcessingObject().SetProcessingType(ImageProcessing::ImageProcessingFilterType::None);
 
-	const mitk::RenderingManager::RenderWindowVector& vec = mitk::RenderingManager::GetInstance()->GetAllRegisteredRenderWindows();
-
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }
 
 void ImageProcessingWidget::OnCheckMedianBlur(int state)
@@ -335,7 +348,7 @@ void ImageProcessingWidget::OnCheckMedianBlur(int state)
 	else
 		m_mapper->getProcessingObject().SetProcessingType(ImageProcessing::ImageProcessingFilterType::None);
 
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }
 
 void ImageProcessingWidget::OnCheckGaussianBlur(int state)
@@ -354,7 +367,7 @@ void ImageProcessingWidget::OnCheckGaussianBlur(int state)
 	else
 		m_mapper->getProcessingObject().SetProcessingType(ImageProcessing::ImageProcessingFilterType::None);
 
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }
 
 void ImageProcessingWidget::OnCheckBilateralFilter(int state)
@@ -373,26 +386,26 @@ void ImageProcessingWidget::OnCheckBilateralFilter(int state)
 	else
 		m_mapper->getProcessingObject().SetProcessingType(ImageProcessing::ImageProcessingFilterType::None);
 
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }
 
 void ImageProcessingWidget::OnMedianParamChanged(ImageProcessing::MedianBlurParam param)
 {
 	m_mapper->getProcessingObject().SetMedianBlurParam(param);
 
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }
 
 void ImageProcessingWidget::OnGaussainParamChanged(ImageProcessing::GaussianBlurParam param)
 {
 	m_mapper->getProcessingObject().SetGaussianBlurParam(param);
 
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }
 
 void ImageProcessingWidget::OnBilateralParamChanged(ImageProcessing::BilateralFilterParam param)
 {
 	m_mapper->getProcessingObject().SetBilateralFilterParam(param);
 
-	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+	updateImage();
 }

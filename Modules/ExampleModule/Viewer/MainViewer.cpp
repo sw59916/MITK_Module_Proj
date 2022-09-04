@@ -1,10 +1,45 @@
 #include "MainViewer.h"
+#include <vtkShaderProperty.h>
+#include <fstream>
+
+
+double CustomVolumeMapper::getRequiredFPS()
+{
+	return m_requiredFPS;
+}
+
+void CustomVolumeMapper::setRequiredFPS(double fps)
+{
+	m_requiredFPS = fps;
+}
+
+CustomVolumeMapper::CustomVolumeMapper()
+	: VolumeMapperVtkSmart3D()
+{
+	m_requiredFPS = 1;
+}
+
+CustomVolumeMapper::~CustomVolumeMapper()
+{
+}
+
+void CustomVolumeMapper::GenerateDataForRenderer(mitk::BaseRenderer* renderer)
+{
+	__super::GenerateDataForRenderer(renderer);
+
+	m_Volume->SetAllocatedRenderTime(1.0 / m_requiredFPS, nullptr);
+}
+
+
 
 MainViewer::MainViewer(QWidget* parent) : QWidget(parent)
 {
 	ds = mitk::StandaloneDataStorage::New();
 	m_imageNode = mitk::DataNode::New();
 	ds->Add(m_imageNode);
+
+	m_volumeMapper = CustomVolumeMapper::New();
+	m_volumeMapper->setRequiredFPS(60);
 
 	m_volumeRendering = false;
 }
@@ -23,16 +58,16 @@ void MainViewer::initialize()
 	sagittalView->setImageNode(m_imageNode);
 	frontalView->setImageNode(m_imageNode);
 
+	//axialView->getPlaneNode()->SetVisibility(false);
+	//sagittalView->getPlaneNode()->SetVisibility(false);
+	//frontalView->getPlaneNode()->SetVisibility(false);
+
 	mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
 void MainViewer::setImage(mitk::Image::Pointer image)
 {
 	m_imageNode->SetData(image->Clone());
-
-	mitk::Mapper* mapper = m_imageNode->GetMapper(mitk::BaseRenderer::Standard3D);
-	cout << mapper->GetNameOfClass() << endl;
-
 
 	auto geo = ds->ComputeBoundingGeometry3D(ds->GetAll());
 	mitk::RenderingManager::GetInstance()->InitializeViews(geo);
@@ -63,39 +98,29 @@ void MainViewer::setupImage()
 	// Set Volume Render Option
 	m_imageNode->SetProperty("volumerendering", mitk::BoolProperty::New(m_volumeRendering));
 
-	mitk::TransferFunction::Pointer tf = mitk::TransferFunction::New();
-	tf->InitializeByMitkImage(image);
+	// Change 3DMapper to CustomVolumeMapper
+	{
+		m_imageNode->SetMapper(mitk::BaseRenderer::Standard3D, m_volumeMapper.GetPointer());
+	}
 
-	// Add Color
-	tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[0], 1.0, 1.0, 1.0);
-	tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[1], 1.0, 1.0, 1.0);
+	// Transfer Function Setting
+	{
+		mitk::TransferFunction::Pointer tf = mitk::TransferFunction::New();
+		tf->InitializeByMitkImage(image);
 
-	// Add Opacity
-	tf->GetScalarOpacityFunction()->AddPoint(5500, 0);
-	tf->GetScalarOpacityFunction()->AddPoint(7000, 1);
+		// Add Color
+		tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[0], 1.0, 1.0, 1.0);
+		tf->GetColorTransferFunction()->AddRGBPoint(tf->GetColorTransferFunction()->GetRange()[1], 1.0, 1.0, 1.0);
 
-	/*tf->GetScalarOpacityFunction()->AddPoint(7000, 0);
-	tf->GetScalarOpacityFunction()->AddPoint(10000, 1);*/
+		// Add Opacity
+		//tf->GetScalarOpacityFunction()->AddPoint(10000, 0);
+		//tf->GetScalarOpacityFunction()->AddPoint(15000, 1);
 
-	m_imageNode->SetProperty("TransferFunction", mitk::TransferFunctionProperty::New(tf.GetPointer()));
+		tf->GetScalarOpacityFunction()->AddPoint(7000, 0);
+		tf->GetScalarOpacityFunction()->AddPoint(10000, 1);
 
-	// Create Surface by InputImage
-	//if (image.IsNotNull())
-	//{
-	//	mitk::ImageToSurfaceFilter::Pointer surfaceFilter = mitk::ImageToSurfaceFilter::New();
-	//	surfaceFilter->SetInput(image);
-
-	//	surfaceFilter->SetThreshold(9000.f);
-
-	//	surfaceFilter->GetOutput()->Update();
-
-	//	mitk::Surface::Pointer surface = surfaceFilter->GetOutput()->Clone();
-
-	//	mitk::DataNode::Pointer surfaceNode = mitk::DataNode::New();
-	//	surfaceNode->SetData(surface);
-
-	//	ds->Add(surfaceNode);
-	//}
+		m_imageNode->SetProperty("TransferFunction", mitk::TransferFunctionProperty::New(tf.GetPointer()));
+	}
 }
 
 void MainViewer::setupWidget()

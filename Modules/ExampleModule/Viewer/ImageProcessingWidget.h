@@ -31,6 +31,7 @@ private:
 	QWidget* createLevelWindowWidget(QWidget* parent = nullptr);
 
 	void updateUI();
+	void updateImage();
 
 private slots:
 	void OnBrightnessChanged(int value);
